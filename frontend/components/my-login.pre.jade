@@ -1,0 +1,19 @@
+style.
+
+div(layout="column").padding20IfWide
+    .md-display-2 Sign in
+    br
+    md-button.fg-white.bg-red.signin-btn(ng-click="app.profile.signInGoogle()") Signin with Google
+    md-button.fg-white.bg-darkBlue.signin-btn(ng-click="app.profile.signInFacebook()") Signin with Facebook
+    md-button.fg-white.bg-gray.signin-btn(ng-click="showAnonLoginDialog()") Signin Anonymously
+
+script(type="text/ng-template",id="template-anon-login")
+    div.padding20IfWide
+        .md-display-1 Sign in anonymously
+        form(ng-submit="submit()")
+            md-input-container.md-block
+                label Display Name
+                input(ng-model='form.displayName', md-maxlength='80', autofocus)
+            md-button.my-bg.fg-white(ng-disabled="isBusy || form.newMessage.length==0", style='',type="submit").margin20 Sign in
+
+

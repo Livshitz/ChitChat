@@ -1,0 +1,48 @@
+runtime: python27
+api_version: 1
+service: default
+threadsafe: true
+
+handlers:
+
+# root
+- url: /
+  #script: template.app
+  #secure: always
+  static_files: index.pre.html
+  upload: index.pre.html
+
+- url: /\/*((.*)\.(js|png|jpg|gif|css|html)(\?.*)?)$
+  static_files: \1
+  expiration: "1s"
+  upload: .*\.(js|png|jpg|gif|css|html)$
+#  secure: always
+
+#- url: /
+#  static_files: www/index.html
+#  upload: www/index.html
+
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+#
+#- url: /(.*)
+#  static_files: www/\1
+#  upload: www/(.*)
+
+- url: /(.*)
+  #script: template.app
+  static_files: index.pre.html
+  upload: .*
+
+- url: /(.+)
+  static_files: \1
+  upload: (.+)
+
+skip_files:
+- node_modules
+
+env_variables:
+  FIREBASE_PROJECT_ID: 'chitchat-157309
+'

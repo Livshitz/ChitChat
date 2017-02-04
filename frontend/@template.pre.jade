@@ -1,0 +1,12 @@
+style.
+
+div(ng-controller="inlineController")
+    .md-display-3.word-break.margin20 Title
+    div(layout="column", layout-align="center center").padding20IfWide
+        br
+
+script.
+    app.lazy.controller('inlineController', function ($scope, $http, $timeout, $location, $cookies) {
+        console.log('----- inlineController loaded')
+
+    });

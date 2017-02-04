@@ -1,0 +1,92 @@
+<style>.topics-cloud { width:100%; min-height:200px; position:relative; overflow:hidden; }
+.topic { position:absolute; font-size:28px; }
+</style><div ng-controller="inlineController" class="padding20IfWide"><!--.md-display-3.word-break Loading Random Topic...--><div class="md-display-1">Looking for a random topic for you...</div><div layout="column" layout-align="center center" class="padding20IfWide"><br/><div class="topics-cloud"><!--.topic(ng-repeat="topic in topics",reveal="fadeInUp",ng-style="{left: fd.ext.randomNumber(500)}")div &#35;{{topic}}--></div><my-pleasewait ng-show="isBusy" style="position:relative; top:-150px;"><md-progress-circular md-mode="indeterminate" md-diameter="100"></md-progress-circular></my-pleasewait><md-button ng-click="showDialog()" class="bg-blue fg-white padding10 margin20">Add your own topic</md-button><br/></div></div><script type="text/ng-template" id="template-my"><div class="padding20IfWide"><div class="md-display-1">Create new topic:</div><form ng-submit="submit()"><md-input-container class="md-block"><label>Topic</label><input ng-model="form.topic" md-maxlength="20" autofocus="autofocus"/></md-input-container><md-button ng-disabled="isBusy || form.newMessage.length==0" style="" type="submit" class="my-bg fg-white margin20">Create!</md-button></form></div></script><script type="text/javascript">app.lazy.controller('inlineController', function ($scope, $rootScope, $http, $timeout, $location, $cookies, $location) {
+    console.log('----- inlineController loaded')
+    $scope.retriedLeft = 3;
+
+    var getNextTopic = function() {
+        app.webapi.GetString('/getNextTopic/' + app.profile.data.userId).Then(function (res) {
+            console.log('setting next topic: ' + res);
+            $scope.nextTopic = res;
+
+            if ($scope.nextTopic == $rootScope.lastTopic && $scope.retriedLeft > 0){
+                $scope.retriedLeft--;
+                getNextTopic();
+            }
+        });
+    }
+    getNextTopic();
+
+    app.webapi.GetString('/getTopics').Then(function (res) {
+        $scope.topics = res; //['trump', 'benjamin netanyahu', 'putin', 'obama', 'apple', 'google', 'hackathons'];
+        $scope.topics = fd.ext.shuffle($scope.topics);
+        //$scope.nextTopic = $scope.topics[fd.ext.randomNumber($scope.topics.length - 1)];
+
+        var topicCloud = $('.topics-cloud');
+        var w = topicCloud.width();
+        var h = topicCloud.height();
+
+        var popTopic = function () {
+            var item = $scope.topics.pop();
+            var newItem = $("<div class='topic fg-blue',reveal='fadeInUp'> &#35;" + item + "</div>").appendTo(topicCloud); //topicCloud.append("<div(class='topic',reveal='fadeInUp'/> &#35;" + item + "</div>");
+            //newItem.hide();
+            newItem.css('left', fd.ext.randomNumber(w, newItem.width()) - newItem.width());
+            newItem.css('bottom', 0);
+            newItem.animate({opacity: 1, top: "-100px"}, 1000 * 10);
+
+            if ($scope.topics.length > 0) $timeout(popTopic, fd.ext.randomNumber(1000, 100));
+        };
+        popTopic();
+
+        var t = null;
+        var startCountdown = function () {
+            $scope.isBusy = true;
+            t = $timeout(function () {
+                if (ngGet('$location').path() != '/nextTopic') return;
+                $scope.isBusy = false;
+                $location.path('/main').search('topic', $scope.nextTopic);
+                $scope.dontStartAgain = true;
+            }, 5000);
+        };
+        startCountdown();
+
+        $scope.showDialog = app.showDialog('my', 'template-my', function ($s, s) {
+            $timeout.cancel(t);
+            $scope.isBusy = false;
+            $scope.safeApply();
+
+            $s.$on('modal.hide', function () {
+                console.log("hide");
+            });
+
+            $s.submit = function (arg) {
+                if ($s.form.topic == null || $s.form.topic.length == 0) {
+                    app.alert('topic name is invalid');
+                    return;
+                }
+
+                $s.form.topic = $s.form.topic.replace(/\s/g, '_').toLowerCase();
+                console.log('new topic!', $s.form.topic)
+
+                $scope.isBusy = true;
+                $scope.safeApply();
+                var dialog = this;
+                app.webapi.GetString('/addTopic/' + $s.form.topic).Then(function (res) {
+                    $location.path('/main').search('topic', $s.form.topic);
+                    dialog.cancel();
+                    $scope.isBusy = false;
+                    $scope.safeApply();
+                });
+
+
+            };
+        }, {m: $scope.m, s: $scope}, function () {
+            console.log('hide!!!')
+            if (!$scope.dontStartAgain) startCountdown();
+        });
+
+        if (fd.Helpers.GetQueryString("create") != null) {
+            $scope.showDialog();
+        }
+    });
+});</script>

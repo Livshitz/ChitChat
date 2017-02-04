@@ -1,0 +1,66 @@
+<style>.signin-btn { padding:10px 40px; text-transform:initial; font-size:20px; min-width:300px; }
+.typed-cursor { opacity:1; -webkit-animation:blink 1s infinite; -moz-animation:blink 1s infinite;
+    animation:blink 1s infinite; color:#000; }
+@keyframes blink { 0% { opacity:1; } 50% { opacity:0; } 100% { opacity:1; } }
+@-webkit-keyframes blink { 0% { opacity:1; } 50% { opacity:0; } 100% { opacity:1; } }
+@-moz-keyframes blink { 0% { opacity:1; } 50% { opacity:0; } 100% { opacity:1; } }
+</style><div ng-controller="inlineController" class="padding20IfWide"><div style="min-height:300px;" class="padding40IfWide"><div style="max-width:550px;" class="md-display-3 word-break margin-auto center">What can you say about&nbsp;<span class="fg-blue"><span>#</span><span class="retype">trump</span></span><span>?</span></div><br/><div class="md-display-1 center">ChitChat finds you a random and popular topic. You have<span class="bold">&nbsp;{{timePerTopicString}}&nbsp;</span>to share the world with what you think, and see what others say about it</div></div><div layout="column" layout-align="center center" class="padding20IfWide"><br/><img src="/images/ChitChat-Logo-2.png"/><md-button ng-href="/nextTopic" class="bg-blue text-large fg-white padding20">Start!</md-button></div><!--form(layout="row",layout-align="center center",layout-wrap,ng-submit="submit()")br
+div
+    .md-title Enter your name:
+    md-input-container.md-block
+        label Full Name
+        input(ng-model='form.fullName')
+
+div
+    md-button.my-bg.fg-white(ng-disabled="isBusy", style='margin:10 0;',type="submit") &nbsp; Login
+--><my-pleasewait ng-show="isBusy">Please wait...<md-progress-linear md-mode="indeterminate"></md-progress-linear></my-pleasewait></div><script>app.lazy.controller('inlineController', function ($scope, $rootScope, $http, $timeout, $location, $cookies) {
+    console.log('----- inlineController loaded')
+
+    $scope.form = {};
+    $scope.form.uuid = fd.Helpers.GetUUID()._value;
+
+    $scope.timePerTopicString = moment().add(1000 * 60 * $rootScope.timePerTopic).fromNow(true);
+
+    $scope.submit = function(){
+        console.log('submit!');
+        $scope.isBusy = true;
+
+        var json = fd.Helpers.Serialize($scope.form);
+        fd.Helpers.HttpPost("/login", json).Then(function(token){
+            console.log('got token',token)
+
+            fd.Helpers.Token = token;
+            fd.Cookies.Set('token', fd.Helpers.Token);
+
+            app.getProfile();
+
+            $location.path('/main');
+            $scope.isBusy = false;
+
+            $scope.$apply();
+
+        }).Catch(function(err){
+            alert('Error in login: ' + err);
+            $scope.isBusy = false;
+            $scope.$apply();
+        });
+    }
+
+
+    console.log('Loading Type')
+    myRequire('https://cdnjs.cloudflare.com/ajax/libs/typed.js/1.1.4/typed.min.js', function(type){
+        console.log('Type loaded! applying')
+
+        app.webapi.GetString('/getTopics').Then(function(topics){
+            $(".retype").typed({
+                strings: topics,
+                shuffle: true,
+                typeSpeed: 10,
+                startDelay: 2000,
+                backDelay: 2000,
+                backSpeed: 20,
+                loop: true
+            });
+        });
+    })
+});</script>

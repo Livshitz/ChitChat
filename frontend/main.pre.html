@@ -1,0 +1,281 @@
+<style>md-input-container.no-margin-bottom { margin-bottom:0; }
+md-input-container.no-margin-bottom input { margin-bottom:0; }
+.msg { }
+.msg p { word-wrap: break-word; }
+.msg .msg-content { min-width:400px; }
+.msg img { max-width: 400px; margin-top:5px; }
+.msg-avatar { width:60px;height:60px; min-width:60px; min-height:60px; }
+.msg-timeAgo {}
+.msg-avatar-right { float:right; }
+#container { padding:0 !important; }
+.panel-static { position:fixed; top:0; background:#eee; z-index:99; width:100%; }
+.topic { line-height:inherit; }
+
+@media screen and (max-width: 599px) { /* xs */
+    .chat-bubble { width:100%; }
+    .msg img { max-width: 100%; }
+    .msg-timeAgo { font-size:12px; m-argin-left:20px; }
+    .msg-avatar { width:50px; height:50px; }
+    .msg .msg-content { min-width:100%; }
+    #message-input { padding:5px; border-width:1px; }
+    #message-input textarea {  }
+    .profile { padding:20px; }
+    .next-topic { margin-right:20px; }
+    md-dialog { padding:10px 20px; }
+}
+</style><div ng-controller="inlineController"><div layout-gt-xs="row" layout-align="space-between center" style="background-color:#eee;padding" class="panel-top padding40IfWide"><div layout="row" layout-align="start center" class="profile"><img ng-src="{{app.profile.data.profilePicUrl}}" err-src="images/profile_placeholder.png" style="width:100px;height:100px;" class="round margin-right no-resize"/><div layout="column" ng-show="isSignedIn()"><div class="md-display-1">{{app.profile.data.displayName}}</div><div ng-click="app.profile.signOut()" class="md-subtitle pointer">logout</div></div><div layout="row" layout-align="start center" ng-show="!isSignedIn()"><md-button ng-click="showLoginDialog()" class="border-dashed">Sign in</md-button></div></div><div layout="row" layout-align-gt-xs="space-around center" layout-align-xs="space-around center"><div layout="column" layout-align="center start" class="margin10 text-center"><div class="md-title margin-none"><span class="fg-lightGray text-lighter">Topic:</span></div><div class="md-display-2 margin-none topic"><span class="bold fg-blue">&#35;{{topic}}</span></div><div class="md-block margin-auto"><div style="padding:2px;" class="ultra-small bg-blue fg-white">participants {{participantsCount()}}</div></div><div class="md-subhead margin-right mif-ani-flash mif-ani-slow"><span>Time left: {{timeLeft()}}</span></div></div><div style="border-left:1px solid #aaa; height:100%; min-height:100px;"></div><div class="next-topic margin10"><a ng-click="gotoNextTopic()" class="md-title">Next Topic</a></div></div></div><div ng-cloak="ng-cloak" ng-show="scroll &gt; topPanelHeight - 10" class="panel-static"><div layout="row" layout-align="space-between center"><div layout="row" layout-align="center center"><div flex="flex" layout="row" layout-align="center center" class="bg-orange margin-right padding10"><img src="/images/ChitChat-Logo-2-Icon.png" style="width:30px;height:30px;"/><div hide-xs="hide-xs" style="max-width: none;" class="md-subhead margin-left fg-white">{{app.name}}</div></div><div hide-xs="hide-xs" class="bg-orange margin-right bg-blue fg-white padding10"><div style="padding:2px;" class="ultra-small">{{participantsCount()}}</div></div><div class="md-title margin-none"><span class="bold fg-blue">&#35;{{topic}}</span></div><div class="md-subhead margin-right mif-ani-flash mif-ani-slow"><span>&nbsp;&nbsp;</span><span hide-xs="hide-xs">Time:</span><span>{{timeLeft()}}</span></div></div><div style="border-left:1px solid #aaa; height:100%; min-height:100%;"></div><div class="margin10 padding-right"><a ng-click="gotoNextTopic()" class="md-subhead">Next Topic</a></div></div></div><div style="padding:10px;"><!--.md-display-3.word-break.margin-none Hey {{ user.fullName.capitalize() }}
+.md-subtitle.text(ng-click="app.logout()").pointer logout--><br/><!--div(layout="column", layout-align="center center").padding20IfWidebr
+my-comp(content="'This is a component!'")
+
+md-button(ng-href="/page2")
+    | Go to page #2 &nbsp;
+    i.icon-heart
+
+--><my-pleasewait ng-show="isBusy"><md-progress-circular md-mode="indeterminate" class="margin-auto md-block"></md-progress-circular></my-pleasewait><br/><md-card class="padding20IfWide"><div ng-repeat="msg in messages" class="margin10 padding10"><div layout="row" layout-align="center start" class="msg"><img ng-src="{{msg.photo}}" err-src="images/profile_placeholder.png" ng-hide="msg.userId == app.profile.data.userId" class="msg-avatar round no-resize margin-right"/><div ng-class="{ 'chat-bubble-right' : msg.userId == app.profile.data.userId, 'chat-bubble-left' : msg.userId != app.profile.data.userId }" class="chat-bubble"><div layout="row" layout-align="space-between" class="msg-content"><div class="md-title bold">{{msg.name}}</div><div class="msg-timeAgo md-subhead">{{ timeAgo(msg.time) }}</div></div><p class="margin-none margin-top">{{msg.text}}</p><img ng-show="msg.image" ng-src="{{msg.image || LOADING_IMAGE_URL}}"/></div><img ng-src="{{msg.photo}}" err-src="images/profile_placeholder.png" ng-show="msg.userId == app.profile.data.userId" class="msg-avatar round no-resize margin-left"/></div></div><!--.tab-controlul.tabs
+    li(ng-class="{active: isActive('/', true)}")
+        a(href='/#!/') Main
+    li(ng-class="{active: isActive('/todolist')}")
+        a(href='/page2') Todolist
+    li(ng-class="{active: isActive('/page_2')}")
+        a(href='/#!/page_2') Other Tab
+    li.place-right(ng-class="{active: isActive('/page_3')}")
+        a(href='/#!/page_3')
+            i.icon-heart
+    li.place-right(ng-class="{active: isActive('/page_4')}")
+        a(href='/#!/page_4')
+            i.icon-cog--><form id="message-input" layout-gt-xs="row" layout-align="center start" layout-wrap="layout-wrap" ng-submit="sendMessage()" class="padding20IfWide border-dashed"><br/><div flex="flex"><md-input-container class="md-block no-margin-bottom"><label>What do you think about &#35;{{topic}}</label><textarea ng-model="form.newMessage" md-maxlength="450" rows="3" md-select-on-focus="md-select-on-focus" autocomplete="off"></textarea><br/><div hide-xs="hide-xs" hide-sm="hide-sm" ng-cloak="ng-cloak" class="fg-grayLight small">* You can press alt+enter to send message</div></md-input-container></div><md-button ng-disabled="isBusy || form.newMessage.length==0" style="" type="submit" class="my-bg fg-white margin20">Send</md-button><input id="mediaCapture" type="file" accept="image/*,capture=camera" class="hide"/><md-icon ng-disabled="isBusy" ng-click="sendImage()" style="padding:0 10px;" class="md-button bg-orange fg-white iconBtn margin20"><div class="mdi mdi-file-image-box"></div></md-icon></form></md-card></div></div><script type="text/ng-template" id="template-login"><my-login></my-login></script><script type="text/javascript">app.lazy.controller('inlineController', function ($scope, $rootScope, $http, $timeout, $location, $cookies, $interval) {
+    console.log('----- inlineController loaded')
+
+    app.stats.getLiveSessionsAsync().Then($scope.safeApply);
+
+    if ($rootScope.sessI != null) {
+        $interval.cancel($rootScope.sessI);
+        $rootScope.sessI = null;
+    }
+    $rootScope.sessI = $interval(function(){
+        app.stats.getLiveSessionsAsync().Then($scope.safeApply);
+    }, 1000 * 5);
+
+    $scope.participants = function(){
+        return app.stats.getLiveSessionsForTopic($scope.topic);
+    };
+    $scope.participantsCount = function(){
+        var ret = ($scope.participants() || []).length;
+        if (ret == null || ret == 0) ret = 1;
+        return ret;
+    };
+
+    key('alt+enter', function () {
+        $scope.sendMessage();
+    });
+
+    key.filter = function(event) {
+        var tagName = (event.target || event.srcElement).tagName;
+        return tagName == 'TEXTAREA'; // !(tagName == 'INPUT' || tagName == 'SELECT'); // || tagName == 'TEXTAREA');
+    }
+
+    $scope.mmss = function(secs) {
+        secs = Math.floor(secs);
+        var minutes = Math.floor(secs / 60);
+        secs = secs%60;
+        var hours = Math.floor(minutes/60)
+        minutes = minutes%60;
+        return /* pad(hours)+":"+ */ pad(minutes)+":"+pad(secs);
+    }
+
+    $scope.LOADING_IMAGE_URL = '/images/image_placeholder.png';
+    $scope.form = {};
+    $scope.form.newMessage = '';
+    $scope.messages = [];
+    $scope.topic = fd.Helpers.GetQueryString('topic');
+    $rootScope.lastTopic = $scope.topic;
+    $timeout(function () {
+        $rootScope.topPanelHeight = $('.panel-top:first').height();
+    }, 500)
+
+    var now = new Date();
+    $scope.topicEndTime = now.setMinutes(now.getMinutes() + $scope.timePerTopic);
+
+    $scope.timeLeft = function () {
+        return $scope.mmss( ($scope.topicEndTime - new Date()) / 1000) // moment($scope.topicEndTime).fromNow(true);
+    }
+
+    $scope.showLoginDialog = app.showDialog('login', 'template-login', function ($scope, s) {
+        $scope.frmNewApp = {};
+    }, {m: $scope.m, s: $scope});
+
+    $scope.addMessage = function (key, data) {
+        _.remove($scope.messages, function (m) {
+            return m.key == key
+        });
+        var newMessage = {
+            key: key,
+            userId: data.userId,
+            name: data.name,
+            text: data.text,
+            photo: data.photoUrl || 'images/profile_placeholder.png',
+            image: data.imageUrl,
+            time: new Date(data.time)
+        };
+        if (newMessage.image != null) newMessage.image = $scope.LOADING_IMAGE_URL;
+        $timeout(function () {
+            $scope.getImageUrlAsync(data.imageUrl, function (trueUrl) {
+                newMessage.image = trueUrl;
+                $scope.safeApply();
+            });
+        }, 100);
+
+        $scope.messages.push(newMessage);
+        $scope.safeApply();
+    };
+
+    /*
+     $scope.posts = app.firebase.database.ref('posts/' + $scope.topic);
+     $scope.posts.on('value', function (snapshot) {
+     console.log('hey!', snapshot.val());
+     });
+     $scope.posts.push({ a: 1 });
+     */
+
+    // Loads chat messages history and listens for upcoming ones.
+    $scope.loadMessages = function () {
+        $scope.isBusy = true;
+        $scope.safeApply();
+
+        // Reference to the /messages/ database path.
+        $scope.messagesRef = app.firebase.database.ref('messages/' + $scope.topic);
+        // Make sure we remove all previous listeners.
+        $scope.messagesRef.off();
+
+        // Loads the last 12 messages and listen for new ones.
+        var setMessage = function (data) {
+            var val = data.val();
+            $scope.addMessage(data.key, data.val());
+        }.bind(this);
+        $scope.messagesRef.on('value', function (snapshot) {
+            console.log('on value!');
+            $scope.isBusy = false;
+            $scope.safeApply();
+        })
+        $scope.messagesRef.limitToLast(30).on('child_added', setMessage);
+        $scope.messagesRef.limitToLast(30).on('child_changed', setMessage);
+    };
+
+    $scope.sendMessage = function () {
+        if (!app.profile.isSignedIn()) {
+            app.alert('You must signin in order to place your comment', 'You\'re not signed in');
+            return;
+        }
+
+        $scope.isBusy = true;
+        $scope.safeApply();
+
+        // Check that the user entered a message and is signed in.
+        if ($scope.form.newMessage && app.profile.isSignedIn()) {
+            var currentUser = app.profile.data;
+            // Add a new message entry to the Firebase Database.
+            $scope.messagesRef.push({
+                userId: currentUser.userId,
+                name: currentUser.displayName,
+                text: $scope.form.newMessage,
+                photoUrl: currentUser.profilePicUrl,
+                time: new Date().toUTCString()
+            }).then(function () {
+                // Clear message text field and SEND button state.
+                $scope.form.newMessage = '';
+                $scope.isBusy = false;
+                $scope.safeApply();
+                app.scrollTo('#message-input')
+            }.bind(this)).catch(function (error) {
+                console.error('Error writing new message to Firebase Database', error);
+            });
+        }
+    };
+
+    $scope.sendImage = function () {
+        if (!app.profile.isSignedIn()) {
+            app.alert('You must signin in order to place your comment', 'You\'re not signed in');
+            return;
+        }
+        mediaCapture.click();
+    }
+
+    $scope.getImageUrlAsync = function (imageUri, callback) {
+        // If the image is a Firebase Storage URI we fetch the URL.
+        if (imageUri != null && imageUri.startsWith('gs://')) {
+            app.firebase.storage.refFromURL(imageUri).getMetadata().then(function (metadata) {
+                var trueUrl = metadata.downloadURLs[0];
+                if (callback) callback(trueUrl);
+            });
+        } else {
+            if (callback) callback(imageUri);
+        }
+    };
+
+    $scope.saveImageMessage = function (event) {
+        var file = event.target.files[0];
+
+        // Check if the user is signed-in
+        if (!app.profile.isSignedIn()) {
+            app.alert('You must signin in order to place your comment', 'You\'re not signed in');
+            return;
+        }
+
+        // We add a message with a loading icon that will get updated with the shared image.
+        var currentUser = app.profile.data;
+        $scope.messagesRef.push({
+            userId: currentUser.userId,
+            name: currentUser.displayName,
+            imageUrl: $scope.LOADING_IMAGE_URL,
+            photoUrl: currentUser.profilePicUrl, //|| '/images/profile_placeholder.png',
+            time: new Date().toUTCString()
+        }).then(function (data) {
+
+            // Upload the image to Firebase Storage.
+            app.firebase.storage.ref(currentUser.userId + '/' + Date.now() + '/' + file.name)
+                .put(file, {contentType: file.type})
+                .then(function (snapshot) {
+                    // Get the file's Storage URI and update the chat message placeholder.
+                    var filePath = snapshot.metadata.fullPath;
+                    data.update({imageUrl: app.firebase.storage.ref(filePath).toString()});
+                }.bind(this)).catch(function (error) {
+                console.error('There was an error uploading a file to Firebase Storage:', error);
+            });
+
+        }.bind(this));
+    };
+
+    var mediaCapture = document.getElementById('mediaCapture');
+    mediaCapture.addEventListener('change', $scope.saveImageMessage.bind(this));
+
+    $scope.timeAgo = function (date) {
+        return moment(date).fromNow();
+    }
+
+    if ($rootScope.timerInterval != null) {
+        $interval.cancel($rootScope.timerInterval);
+        $rootScope.timerInterval = null;
+    }
+    $rootScope.timerInterval = $interval(function () {
+        if (new Date() > $scope.topicEndTime) $scope.gotoNextTopic();
+    }, 1000);
+
+    $scope.gotoNextTopic = function(){
+        $interval.cancel($scope.timerInterval);
+        $interval.cancel($scope.sessI);
+        $location.path('/nextTopic').search('topic', null)
+    }
+
+    var presenceRef = firebase.database().ref("disconnectmessage");
+    presenceRef.onDisconnect().set("I disconnected!");
+
+    $scope.loadMessages();
+
+    $timeout(function(){
+        var serUserData = fd.Helpers.Serialize(app.profile.data);
+        app.webapi.Post('/updateActivity/{0}/{1}'.format(app.profile.data.userId, $scope.topic), serUserData)
+            .Then(function (res) {
+                console.log('updateActivity: done');
+            });
+    }, 100);
+});</script>

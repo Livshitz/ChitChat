@@ -87,6 +87,10 @@ ENV/
 # Rope project settings
 .ropeproject
 
+.idea/
+
+node_modules/
+
 # =========================
 # Operating System Files
 # =========================
