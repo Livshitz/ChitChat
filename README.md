@@ -35,6 +35,12 @@ npm install
 gulp dev
 ```
 
+## Create local file with Firebase secret key:
+This key is used in order to use Firebase's REST API to manipulate the topics.
+- Go to: 'https://console.firebase.google.com/project/[YOUR-PROJECT-ID]/settings/serviceaccounts/databasesecrets'
+- Grab the 'Secrets' key
+- Save it into a file at '[ChitChat folder]/backend/authkey-chitchat.txt'
+
 ## Start GAE dev environment:
 ```
 dev_appserver.py frontend/app.yaml backend/app.yaml 
