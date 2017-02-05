@@ -1,6 +1,7 @@
 # ChitChat - https://chitchat-157309.appspot.com
 Get random topic, say what's on your mind and see what others say. Your have 1 minute. Go!
 <img src="https://cloud.githubusercontent.com/assets/246724/22620744/ff907066-eb1a-11e6-877c-0ac87b221a37.png" width="250" height="250">
+This app is intended to be a template for quick-start project for hackathons. 
 --------------
 # Background
 This project was build on order to experiment GAE (Google App Engine), it's serverless platform, and to learn Python.  
