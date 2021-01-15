@@ -2,3 +2,4 @@ entrypoint: frontend/app.yaml backend/app.yaml
 env: flex
 runtime: python
 threadsafe: yes
+max_instances: 1
